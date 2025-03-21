@@ -14,9 +14,9 @@ RUN python -m venv venv
 RUN . /app/venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt
 
 # Expone el puerto 8009
-EXPOSE 8009
+EXPOSE 8002
 
 # Comando para correr Gunicorn con el entorno virtual activado
-CMD ["/bin/bash", "-c", ". /app/venv/bin/activate && gunicorn --bind 0.0.0.0:8009 main:app"]
+CMD ["/bin/bash", "-c", ". /app/venv/bin/activate && gunicorn --bind 0.0.0.0:8002 main:app"]
 
 
