@@ -9,6 +9,7 @@ h11==0.14.0
 idna==3.10
 packaging==24.2
 psycopg==3.2.4
+psycopg2-binary==2.9.10
 psycopg2==2.9.10
 pydantic==2.10.6
 pydantic_core==2.27.2
@@ -19,3 +20,5 @@ starlette==0.45.3
 typing==3.7.4.3
 typing_extensions==4.12.2
 uvicorn==0.34.0
+
+
