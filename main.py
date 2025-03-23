@@ -172,39 +172,31 @@ class ItemRepository:
     
     def search_items(self, search_term: str, limit: int) -> List[ItemResponse]:
         try:
-            search_pattern = f"{search_term}%"
-            with self.sql_connector.connect() as conn:
+            pattern = f"{search_term.lower()}%"
+            with self.pg_connector.connect() as conn:
                 with conn.cursor() as cursor:
                     query = """
-                        SELECT oitm.ItemCode, 
-                            COALESCE(alm.ToWH, 'Z010002') AS Dealmacen,
-                            LTRIM(RTRIM(oitm.ItemName)) AS Dscription,  
-                            COALESCE(um.UomCode, '') AS UomCode
-                        FROM OITM 
-                        LEFT JOIN WTR1 um ON um.ItemCode = oitm.ItemCode
-                        LEFT JOIN OITT alm ON oitm.ItemCode = alm.Code
-                        WHERE 
-                        (oitm.ItemName LIKE ? OR oitm.ItemCode LIKE ?)
-                        AND oitm.ItemCode NOT LIKE 'V%' 
-                        AND oitm.ItemCode NOT LIKE 'C%'
-                        AND oitm.ItemCode NOT LIKE 'M%'
-                        AND oitm.ItemCode NOT LIKE 'I01%'
-                        AND oitm.ItemCode NOT LIKE 'S%'
-                        AND oitm.ItemCode NOT LIKE 'X%'
-                        AND oitm.ItemCode NOT LIKE 'R%'
-                        AND oitm.ItemCode NOT LIKE 'L%'
-                        AND oitm.ItemCode NOT LIKE 'AF%'
-                        GROUP BY oitm.ItemCode, oitm.ItemName, um.UomCode, alm.ToWH
-                        ORDER BY oitm.ItemName
-                        OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY
+                        SELECT "ItemCode", "Dealmacen", "Dscription", "UomCode"
+                        FROM productos_sap
+                        WHERE LOWER("Dscription") LIKE %s OR LOWER("ItemCode") LIKE %s
+                        ORDER BY "Dscription"
+                        LIMIT %s
                     """
-                    cursor.execute(query, search_pattern, search_pattern, limit)
-                    results = cursor.fetchall()
-                    return [ItemResponse(ItemCode=row.ItemCode, Dealmacen=row.Dealmacen, Dscription=row.Dscription, UomCode=row.UomCode) for row in results]
-        except pyodbc.Error as e:
-            logging.error(f"Database error: {str(e)}")
+                    cursor.execute(query, (pattern, pattern, limit))
+                    rows = cursor.fetchall()
+                    return [
+                        ItemResponse(
+                            ItemCode=row[0],
+                            Dealmacen=row[1],
+                            Dscription=row[2],
+                            UomCode=row[3]
+                        )
+                        for row in rows
+                    ]
+        except psycopg2.Error as e:
+            logging.error(f"Error al buscar productos: {str(e)}")
             raise HTTPException(status_code=500, detail="Error en la base de datos")
-    
+
     def save_items(self, items: List[Item]):
         try:
             with self.pg_connector.connect() as conn:
