@@ -87,8 +87,7 @@ class RegisteredItem(BaseModel):
 
 # Repositorio para manejar la base de datos
 class ItemRepository:
-    def __init__(self, sql_connector: DatabaseConnector, pg_connector: DatabaseConnector):
-        self.sql_connector = sql_connector
+    def __init__(self, pg_connector: DatabaseConnector):
         self.pg_connector = pg_connector
 
 
@@ -251,7 +250,7 @@ class ItemRepository:
             logging.error(f"Error al obtener registros: {str(e)}")
             raise HTTPException(status_code=500, detail="Error al obtener registros")
 
-repository = ItemRepository(sqlserver_db, postgres_db)
+repository = ItemRepository(postgres_db)
 
 
 
