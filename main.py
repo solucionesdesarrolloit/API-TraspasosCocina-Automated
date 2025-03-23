@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from typing import List, Optional, Protocol
 from fastapi.middleware.cors import CORSMiddleware
 import logging
-import pyodbc
 import psycopg2
 from datetime import datetime
 
@@ -25,19 +24,6 @@ class DatabaseConnector(Protocol):
     def connect(self):
         pass
 
-class SQLServerConnector:
-    def __init__(self):
-        self.connection_string = f"""
-            DRIVER={os.getenv("SQL_SERVER_DRIVER")};
-            SERVER={os.getenv("SQL_SERVER_HOST")},1433;
-            DATABASE={os.getenv("SQL_SERVER_DB")};
-            UID={os.getenv("SQL_SERVER_USER")};
-            PWD={os.getenv("SQL_SERVER_PASSWORD")};
-            TrustServerCertificate=yes;
-        """
-    
-    def connect(self):
-        return pyodbc.connect(self.connection_string)
 
 class PostgreSQLConnector:
     def __init__(self):
@@ -56,7 +42,6 @@ class PostgreSQLConnector:
 
 load_dotenv(dotenv_path=".env", override=True)
 
-sqlserver_db = SQLServerConnector()
 postgres_db = PostgreSQLConnector()
 
 class Chef(BaseModel):
