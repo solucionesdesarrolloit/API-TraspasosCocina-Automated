@@ -7,9 +7,12 @@ from fastapi.middleware.cors import CORSMiddleware
 import logging
 import psycopg2
 from datetime import datetime
+from prometheus_fastapi_instrumentator import Instrumentator
+
 
 
 app = FastAPI()
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -18,6 +21,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+instrumentator = Instrumentator().instrument(app).expose(app)
 
 # Interfaces para la conexión a bases de datos
 class DatabaseConnector(Protocol):
