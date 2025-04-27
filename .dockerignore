@@ -4,13 +4,17 @@ __pycache__/
 *.pyo
 *.pyd
 
+
 # Entorno virtual local (fuera del que se crea en Docker)
 venv/
-env/
-
+env
+others/
 # Archivos ocultos del sistema operativo
 .DS_Store
 Thumbs.db
+#archivos de entorno
+.env
+.env.*
 
 # Archivos y carpetas de Git
 .git
@@ -23,9 +27,10 @@ Thumbs.db
 # Archivos de logs
 *.log
 
-# Archivos de entorno
-.env
+
 
 # Docker
 Dockerfile
 docker-compose.yml
+
+README.md
