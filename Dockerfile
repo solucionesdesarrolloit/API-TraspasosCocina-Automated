@@ -1,19 +1,13 @@
-FROM python:3.9-slim
+FROM bamos/face_recognition:latest
 
 WORKDIR /app
 
 COPY requirements.txt .
 
-# Instalar herramientas necesarias y luego instalar los paquetes de Python
-RUN apt-get update && \
-    apt-get install -y build-essential cmake libopenblas-dev libx11-dev && \
-    pip install --no-cache-dir --use-deprecated=legacy-resolver -r requirements.txt && \
-    apt-get remove -y build-essential cmake && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/*
+# Solo instala lo que falta: FastAPI, Uvicorn, etc.
+RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-COPY main.py .
-COPY .env .
+COPY . .
 
 EXPOSE 8000
 
